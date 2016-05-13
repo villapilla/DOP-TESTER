@@ -10,25 +10,34 @@ var mongoose = require('mongoose'),
  * Article Schema
  */
 var ArticleSchema = new Schema({
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  title: {
+  name: {
     type: String,
-    default: '',
     trim: true,
-    required: 'Title cannot be blank'
   },
-  content: {
+  url : {
     type: String,
-    default: '',
-    trim: true
+  },
+  active : {
+    type: Boolean,
+    default: false
+  },
+  test : {
+    type: Array,
+    default: []
+  },
+  lastUpdate : {
+    type: Date
+  },
+  lastCommit : {
+    type: String
   },
   user: {
     type: Schema.ObjectId,
     ref: 'User'
   }
 });
+ArticleSchema.statics.repositoryByUser = function (userName, cb) {
+  return this.model('Article').find({ user: userName }, cb);
+};
 
 mongoose.model('Article', ArticleSchema);

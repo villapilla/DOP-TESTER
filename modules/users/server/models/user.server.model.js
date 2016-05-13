@@ -28,7 +28,7 @@ var validateLocalStrategyEmail = function (email) {
  * User Schema
  */
 var UserSchema = new Schema({
-  firstName: {
+  /*firstName: {
     type: String,
     trim: true,
     default: '',
@@ -39,7 +39,7 @@ var UserSchema = new Schema({
     trim: true,
     default: '',
     validate: [validateLocalStrategyProperty, 'Please fill in your last name']
-  },
+  },*/
   displayName: {
     type: String,
     trim: true
@@ -59,10 +59,10 @@ var UserSchema = new Schema({
     lowercase: true,
     trim: true
   },
-  password: {
+  /*password: {
     type: String,
     default: ''
-  },
+  },*/
   salt: {
     type: String
   },

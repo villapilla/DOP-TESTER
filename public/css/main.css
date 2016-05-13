@@ -1,0 +1,284 @@
+.navbar-default {
+    background-color: #060606;
+    border-color: #E7E7E7;
+}
+.navbar-inverse .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus {
+    color: #BBBABA;
+    background-color: #060606;
+    line-height: 2em;
+}
+.navbar-inverse .navbar-nav > .active > a:hover {
+    color: white;
+    background-color: #545353;
+    line-height: 2em;
+}
+#marca {
+  font-size: 2.5em;
+  color: #BBBABA;
+}
+#marca:hover {
+  color: white;
+}
+#marca span {
+    color: #CBC57A;
+}
+#marca span:first-letter{
+    color:white;
+}
+#log_git {
+  padding: 7px;
+}
+#log_git button {
+  border-radius: 5px;
+  padding: 2px 7px 2px 5px;
+  color: white;
+  background: black;
+}
+#log_git button:hover {
+  color: black;
+  background: white;
+}
+#log_git button:hover img {
+  src: "../img/git_negro.png"
+}
+footer {
+  text-align: center;
+  z-index: 100000;
+}
+footer section ul li{
+  list-style: none;
+  text-align: center;
+}
+footer li.brand {
+  margin: 0 35%;
+  display: inline-block;
+}
+footer.navbar-inverse {
+  border-top: #CBC57A 5px solid;
+}
+footer .sprite_redes {
+  display: inline-block;
+  height: 40px;
+  background-image: url("../img/social-media-icons1.jpg");
+  background-repeat: no-repeat;
+  width: 40px;
+  border-radius: 23%;
+  background-size: 740%;
+  margin: 5% 5% 0 0;
+}
+footer .facebook {
+  display: inline-block;
+  height: 40px;
+  background-image: url("../img/social-media-icons1.jpg");
+  background-repeat: no-repeat;
+  width: 40px;
+  border-radius: 23%;
+  background-size: 740%;
+  margin: 5% 5% 0 0;
+  background-position: -29px -14px;
+  margin-left: 4%;
+}
+footer .facebook a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+footer .twitter {
+  display: inline-block;
+  height: 40px;
+  background-image: url("../img/social-media-icons1.jpg");
+  background-repeat: no-repeat;
+  width: 40px;
+  border-radius: 23%;
+  background-size: 740%;
+  margin: 5% 5% 0 0;
+  background-position: -128px -14px;
+}
+footer .twitter a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+footer .google {
+  display: inline-block;
+  height: 40px;
+  background-image: url("../img/social-media-icons1.jpg");
+  background-repeat: no-repeat;
+  width: 40px;
+  border-radius: 23%;
+  background-size: 740%;
+  margin: 5% 5% 0 0;
+  background-position: -29px -117px;
+}
+footer .google a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+footer #contacto {
+  margin-top: 20px;
+  padding-bottom: 50px;
+}
+footer #contacto span, footer #contacto figcaption{
+  font-size: 1.5em;
+  color: #BBBABA;
+}
+footer #contacto span:hover {
+  cursor: pointer;
+  color: white;
+}
+footer a:hover {
+  text-decoration: none;
+}
+#index-content {
+  text-align: center;
+  color: black;
+}
+#index-content p:first-letter {
+  text-transform: capitalize;
+}
+#index-content p{
+  font-size: 2.5em;
+  margin: 5% 8%;
+  font-weight: bold;
+}
+.btn-git div {
+  text-align: left;
+  padding-top: 8%; 
+  color: black;
+  font-size: 2.8em;
+  width: 45%;
+  display: inline-block;
+  font-weight: bold;
+}
+.btn-git img {
+  vertical-align: top;
+  width: 40%;
+  display: inline-block;
+  margin-left: -10px;
+}
+.btn-git { 
+  color: #FFFFFF; 
+  background-color: #D4DE1B; 
+  border-color: #130269; 
+  border-radius: 5%;
+  width: 45%; 
+  white-space: normal;
+} 
+
+.btn-git:hover, 
+.btn-git:focus, 
+.btn-git:active, 
+.btn-git.active, 
+.open .dropdown-toggle.btn-git { 
+  color: #FFFFFF; 
+  background-color: #CBC57A; 
+  border-color: #130269; 
+} 
+ 
+.btn-git:active, 
+.btn-git.active, 
+.open .dropdown-toggle.btn-git { 
+  background-image: none; 
+} 
+ 
+.btn-git.disabled, 
+.btn-git[disabled], 
+fieldset[disabled] .btn-git, 
+.btn-git.disabled:hover, 
+.btn-git[disabled]:hover, 
+fieldset[disabled] .btn-git:hover, 
+.btn-git.disabled:focus, 
+.btn-git[disabled]:focus, 
+fieldset[disabled] .btn-git:focus, 
+.btn-git.disabled:active, 
+.btn-git[disabled]:active, 
+fieldset[disabled] .btn-git:active, 
+.btn-git.disabled.active, 
+.btn-git[disabled].active, 
+fieldset[disabled] .btn-git.active { 
+  background-color: #D4DE1B; 
+  border-color: #130269; 
+} 
+ 
+.btn-git .badge { 
+  color: #D4DE1B; 
+  background-color: #FFFFFF; 
+}
+body {
+  background-color: white;
+}
+.navbar {
+  margin-bottom: 0;
+}
+.btn-git .badge { 
+  color: #CBC57A; 
+  background-color: #FFFFFF; 
+}
+.menu-lateral {
+
+  padding-right: 0;
+  padding-top: 20px;
+  list-style: none;
+  font-size: 2em;
+}
+
+.menu-lateral a {
+  color: black;
+  text-decoration: none;
+}
+.menu-lateral a:hover {
+  color: grey;
+  text-decoration: none;
+}
+.menu-lateral a.inactive {
+  color: #A53946;
+}
+.menu-lateral a.active {
+  color: #4A802A;
+}
+
+.divider {
+  display: block;
+  border: 2px solid black;
+}
+.home-body {
+    padding-top: 20px;
+    list-style: none;
+    font-size: 2em;
+   
+  border-left: black 5px double;
+}
+.home-body h2 {
+  display: inline-block;
+}
+.home-body ul {
+  list-style: none;
+}
+.home-body {
+  line-height: 3;
+}
+.home-body img {
+  width: 150px;
+  cursor: pointer;
+}
+.home {
+    border-left: black 5px double;
+}
+.testTitle span{
+    font-size: 3.2em;
+   color: #265A88;
+   text-align: left;
+}
+.result {
+  font-size: 1.8em;
+}
+.result .active {
+  color: green;
+}
+.result .inactive {
+  color: red;
+}
+.noDisplay {
+  display: none;
+}

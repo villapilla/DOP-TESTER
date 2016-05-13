@@ -12,7 +12,10 @@ angular.module('articles').config(['$stateProvider',
       })
       .state('articles.list', {
         url: '',
-        templateUrl: 'modules/articles/client/views/list-articles.client.view.html'
+        templateUrl: 'modules/articles/client/views/list-articles.client.view.html',
+        data: {
+          roles: ['user', 'admin']
+        }
       })
       .state('articles.create', {
         url: '/create',
@@ -21,7 +24,7 @@ angular.module('articles').config(['$stateProvider',
           roles: ['user', 'admin']
         }
       })
-      .state('articles.view', {
+      .state('articles.read', {
         url: '/:articleId',
         templateUrl: 'modules/articles/client/views/view-article.client.view.html'
       })

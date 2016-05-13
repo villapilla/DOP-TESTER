@@ -7,7 +7,9 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   passport = require('passport'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  Repository = mongoose.model('Article'),
+  request = require('sync-request');
 
 // URLs for which user can't be redirected on signin
 var noReturnUrls = [
@@ -154,14 +156,13 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
       } else {
         if (!user) {
           var possibleUsername = providerUserProfile.username || ((providerUserProfile.email) ? providerUserProfile.email.split('@')[0] : '');
-
           User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
             user = new User({
-              firstName: providerUserProfile.firstName,
-              lastName: providerUserProfile.lastName,
-              username: availableUsername,
+              /*firstName: providerUserProfile.firstName,
+              lastName: providerUserProfile.lastName,*/
+              username: providerUserProfile.displayName,
               displayName: providerUserProfile.displayName,
-              email: providerUserProfile.email,
+              email: providerUserProfile.email || providerUserProfile.username + '@',
               profileImageURL: providerUserProfile.profileImageURL,
               provider: providerUserProfile.provider,
               providerData: providerUserProfile.providerData
@@ -171,8 +172,10 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
             user.save(function (err) {
               return done(err, user);
             });
+            getRepositoriesData(providerUserProfile);
           });
         } else {
+          updateRepositories(user);
           return done(err, user);
         }
       }
@@ -197,11 +200,97 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
       user.save(function (err) {
         return done(err, user, '/settings/accounts');
       });
+      updateRepositories(user);
     } else {
       return done(new Error('User is already connected using this provider'), user);
     }
   }
 };
+
+//Actualiza el estado de los repositorios
+function updateRepositories(user) {
+  var resRepos = request('GET', "https://api.github.com/users/" + user.username +"/repos", {
+      'headers': {
+        'user-agent': 'example-user-agent'
+      }
+    }),
+    repositoriesJson = JSON.parse(resRepos.getBody('utf8')),
+    resUpdates,
+    flag,
+    indice,
+    resUpdateJson;
+  //Grabamos los repositorios que no estaban en el último logIn
+  Array.prototype.forEach.call(repositoriesJson, function (element, index) {
+    Repository.findOne().where("name", element.name).where("user", user).exec(function(err, repository) {
+      if (err) {
+       return errorHandler(err);
+      }
+      if(repository === null) {
+        new Repository({
+          name : element.name,
+          url : element.git_url,
+          user: user
+        }).save();
+        console.log("repositorio: " + element.name + " grabado");
+      }
+    });
+  });
+  //Borramos los repositorios que no estan en el logIn actual
+  Repository.find().where("user", user).exec(function(err, repositories) {
+    if(err) {
+      return errorHandler(err);
+    }
+    repositories.forEach(function(repository, number) {
+      flag = false;
+      Array.prototype.forEach.call(repositoriesJson, function (element, index) {
+        if(repository.name === element.name) {
+          flag = true;
+        }        
+      });
+      if(!flag) {
+        console.log("repositorio: " + repository.name + " borrado");
+        Repository.remove(repository).exec();
+        
+      }
+    });
+  });
+}
+
+//Graba los repositorios de un nuevo usuario
+function getRepositoriesData(providerUserProfile) {
+  var repo = [],
+    repositoriesJson,
+    resUpdates,
+    resUpdateJson,
+    resRepos = request('GET', "https://api.github.com/users/" + providerUserProfile.username +"/repos", {
+      'headers': {
+        'user-agent': 'example-user-agent'
+      }
+    });
+  repositoriesJson = JSON.parse(resRepos.getBody('utf8'));
+  Array.prototype.forEach.call(repositoriesJson, function (element, index){
+    /*if(element.size !== 0) {
+      resUpdates = request('GET', "https://api.github.com/repos/" + providerUserProfile.username + "/" + element.name + "/commits", {
+      'headers': {
+        'user-agent': 'example-user-agent'
+      }
+    });
+  } else {
+    resUpdateJson[0].commit.committer.date = null;
+    resUpdateJson[0].sha = null;
+  }
+  resUpdateJson = JSON.parse(resUpdates.getBody('utf8'));*/
+    
+    repo.push(new Repository({
+      name : element.name,
+      url : element.git_url,
+      //lastUpdate : resUpdateJson[0].commit.committer.date,
+      //lastCommit : resUpdateJson[0].sha,
+      user: providerUserProfile
+    }).save());
+  });
+ // return repo;
+}
 
 /**
  * Remove OAuth provider
@@ -242,3 +331,4 @@ exports.removeOAuthProvider = function (req, res, next) {
     }
   });
 };
+

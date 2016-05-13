@@ -1,4 +1,4 @@
-<section ng-controller="ArticlesController" ng-init="find()">
+<!--<section ng-controller="ArticlesController" ng-init="find()">
   <div class="page-header">
     <h1>Articles</h1>
   </div>
@@ -17,4 +17,36 @@
   <div class="alert alert-warning text-center" ng-if="articles.$resolved && !articles.length">
     No articles yet, why don't you <a ui-sref="articles.create">create one</a>?
   </div>
+</section>-->
+
+<section  ng-controller="ArticlesController" ng-init="find(user)">
+    <div class="col-md-12 col-sm-12 col-xs-12 home">
+            <ul class="col-md-4 col-sm-4 col-xs-0 menu-lateral">
+                <li>
+                    <h2>
+                        <a href="/home">Repositorios</a>
+                    </h2>
+                </li>
+                <li>
+                    <span class="divider"></span>
+                </li>
+                 <a ng-repeat="article in articles" ui-sref="articles.read({articleId: article._id})" class="list-group-item">
+                   <span class="inactive"  ng-bind="article.name"  ng-class="{active: repo.active}"></span>
+                   <span class="glyphicon" ng-class="{glyphicon-ok: step.active, glyphicon-remove: !step.active}"  aria-hidden="true"></span>
+                  </a>
+                </li>
+            </ul>
+            <div class="col-md-8 col-sm-8 col-xs-12 home-body">
+                <h1 class="col-md-6 col-sm-6 col-xs-6 col-md-offset-2 col-xs-offset-2 col-sm-offset-2">Repositorios</h1>
+                <h1 class="col-md-4 col-sm-4 col-xs-4">Estado</h1>
+                <ul class="col-md-12 col-sm-12 col-xs-12">
+                    <li ng-repeat="repo in articles">
+                        <h2 data-ng-bind="repo.name" class="col-md-6 col-sm-6 col-xs-6 col-md-offset-2 col-xs-offset-2 col-sm-offset-2"></h2>
+                        <figure class="col-md-4 col-sm-4 col-xs-4">
+                            <img ng-src="{{ repo.active && 'img/botonOn.png' || 'img/botonOff.png' }}" ng-click="chageStateRepository(repo)"/>
+                        </figure>
+                    </li>
+                </ul>
+            </div> 
+        </div>
 </section>

@@ -1,10 +1,16 @@
 'use strict';
 
 // Articles controller
-angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles',
-  function ($scope, $stateParams, $location, Authentication, Articles) {
+angular.module('articles').controller('ArticlesController', ['$resource', '$scope', '$stateParams', '$location', 'Authentication', 'Articles', 'ArticlesService2',
+  function ($resource, $scope, $stateParams, $location, Authentication, Articles, ArticlesService2) {
     $scope.authentication = Authentication;
-
+    
+    $scope.chageStateRepository = function (article) {
+      $scope.article = ArticlesService2.query({
+        param1: article._id,
+      });
+    article.active = !article.active;
+    };
     // Create new Article
     $scope.create = function (isValid) {
       $scope.error = null;
@@ -69,9 +75,10 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
       });
     };
 
-    // Find a list of Articles
+    // Find a list of Articles for user
     $scope.find = function () {
       $scope.articles = Articles.query();
+      //$scope.articles = Articles.get({user: userData});
     };
 
     // Find existing Article
@@ -79,6 +86,9 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
       $scope.article = Articles.get({
         articleId: $stateParams.articleId
       });
+    };
+    $scope.hasCommit = function (article) {
+      return article !== null && article !== undefined;
     };
   }
 ]);

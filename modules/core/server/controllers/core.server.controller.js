@@ -40,3 +40,8 @@ exports.renderNotFound = function (req, res) {
     }
   });
 };
+//function to launch and update test
+exports.updateTest = function (req, res) {
+  console.log(req);
+  console.log("good way");
+};

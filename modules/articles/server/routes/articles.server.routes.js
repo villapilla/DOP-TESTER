@@ -17,7 +17,8 @@ module.exports = function (app) {
     .get(articles.read)
     .put(articles.update)
     .delete(articles.delete);
-
+    
+  app.route('/api/articles/start/:articleId').get(articles.startRepository);
+  //app.route('api/articles/start/:articleId').all(articlesPolicy.isAllowed).get(articles.start);
   // Finish by binding the article middleware
-  app.param('articleId', articles.articleByID);
 };

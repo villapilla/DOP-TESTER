@@ -5,7 +5,11 @@ module.exports = {
     lib: {
       css: [
         'public/lib/bootstrap/dist/css/bootstrap.css',
-        'public/lib/bootstrap/dist/css/bootstrap-theme.css'
+        'public/lib/bootstrap/dist/css/bootstrap-theme.css',
+        'public/css/sb-admin.css',
+        'public/css/plugins/morris.css',
+        'public/font-awesome/css/font-awesome.min.css',
+        'public/css/main.css'
       ],
       js: [
         'public/lib/angular/angular.js',
@@ -16,7 +20,14 @@ module.exports = {
         'public/lib/angular-ui-utils/ui-utils.js',
         'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
         'public/lib/angular-file-upload/angular-file-upload.js',
-        'public/lib/owasp-password-strength-test/owasp-password-strength-test.js'
+        'public/lib/owasp-password-strength-test/owasp-password-strength-test.js',
+        'public/js/jquery.js',
+        'public/js/bootstrap.min.js',
+        'public/js/plugins/morris/raphael.min.js',
+        'public/js/plugins/morris/morris-data.js',
+        'public/js/plugins/morris/morris.min.js',
+        'public/js/main.js',
+        'public/js/lazy.js'
       ],
       tests: ['public/lib/angular-mocks/angular-mocks.js']
     },

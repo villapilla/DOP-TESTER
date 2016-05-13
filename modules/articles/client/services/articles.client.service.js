@@ -12,3 +12,15 @@ angular.module('articles').factory('Articles', ['$resource',
     });
   }
 ]);
+
+angular.module('articles').factory('ArticlesService2', ['$resource',
+    function($resource) {
+        return $resource('api/articles/start/:param1', {
+            param1: '@_id'
+        }, {
+            update: {
+                method: 'PUT'
+            }
+        });
+    }
+]);
