@@ -11,6 +11,7 @@ var config = require('../config'),
   request = require('restling'),
   nodegit = require('nodegit'),
   path = require('path'),
+  glob = require('glob'),
   //Mail dependencies
   nodeMailer = require('nodemailer'),
   smtpTransport = require('nodemailer-smtp-transport'),
@@ -73,7 +74,7 @@ module.exports.start = function start(callback) {
       console.log('--');
      
       //Test service
-      /*setInterval(function () {
+      setInterval(function () {
         db.connections[0].model('Article').find({ 'active' : true }).exec(function (err, art) {
           if(err) {
             console.log('Se ha producido un error en el lanzamiento de test...');
@@ -88,7 +89,7 @@ module.exports.start = function start(callback) {
             });
           });
         });
-      },1000000);*/
+      },2000000);
   
       if (callback) {
         callback(app, db, config);
@@ -96,6 +97,35 @@ module.exports.start = function start(callback) {
     });
   });
 };
+
+function generateIndex(js, renderType, folder, db, repository, user) {
+  var scripts,
+    textFile,
+    content,
+    searchInit = '<h1>DOP-Tester</h1>',
+    searchEnd = '<h1>end of test</h1>',
+    file = './testLaunch/repositories/layout_html_no_test/index.html',
+    dirPath = 'https://dop-tester-villapilla-1.c9users.io/testing/layout_html_no_test/';
+  fs.readFile(file, function(err, index) {
+    if(err) {
+      console.log('Error in read ' + file);
+    } else {
+      textFile = index.toString();
+      scripts = js.reduce(function (x, y) {
+        return x + '<script src=\"https://cdn.rawgit.com/' + user.username + '/' + repository.name + '/master' + y + '\" type=\"text/javascript\"></script>\n';
+      },'\n');
+      content = textFile.substr(0, textFile.indexOf(searchInit) + searchInit.length) + scripts +
+        textFile.substring(textFile.indexOf(searchEnd), textFile.length);
+      fs.writeFile(file, content, 'utf-8', function(err, file) {
+        if(err) {
+          console.log('Error writing index');
+        } else {
+          testEmulation(dirPath, renderType, folder, db, repository._id, user);
+        }
+      });
+    }
+  });
+}
 
 function launchTest(repository, user, db) {
   var commitUrl = 'https://api.github.com/repos/' + user.username + '/' + repository.name + '/commits',
@@ -114,8 +144,8 @@ function launchTest(repository, user, db) {
       repository.lastCommit = commitSha;
       repository.lastUpdate = new Date();
       repository.save();
-      cloneRepository(repository.url, testUrl, folder, repository._id, user, db);
-      console.log('launchtest yipi kai yeahh!!!');
+      cloneRepository(repository.url, testUrl, folder, repository, user, db);
+      console.log('go Launch Test');
     } else {
       console.log('Repository ' + repository.name + ' has not changes');
     }
@@ -126,10 +156,32 @@ function launchTest(repository, user, db) {
 }
 
 
-function cloneRepository(url, testUrl, folder, repositoryId, user, db) {
+function cloneRepository(url, testUrl, folder, repository, user, db) {
   nodegit.Clone(url, folder, {}).then(function (repo) {
     console.log('Cloned ' + path.basename(url) + ' to ' + repo.workdir());
-    testEmulation(testUrl, 'plainText', folder, db, repositoryId, user);
+    fs.readdir(folder + '/test', function (err, file) {
+      if(err) {
+        console.log('no se puede leer el repositorio');
+      } else {
+        if(file.indexOf('index.html') !== -1) {
+          //Launch mocha test with index.html
+          testEmulation(testUrl, 'plainText', folder, db, repository._id, user);
+        } else {
+          //Other type of launch
+          glob(folder + '/**/**/*.js', function(err, files) {
+            if(err) {
+              console.log('Se ha producido un error leyendo los ficheros');
+            } else {
+              files = files.map(function (element) {
+                return element.substring(folder.length, element.length);
+              });
+              generateIndex(files, 'plainText', folder, db, repository, user);
+            }
+          });
+        }
+      }
+    });
+    
   }).catch(function (err) {
     console.log(err);
   });
@@ -169,7 +221,7 @@ function testEmulation(url, renderType, path, db, repositoryId, user) {
       new Test({
         numberTests: testResult.numberTest,
         testsPass: testResult.testsPass,
-        exit_input: testResult.exit_input.replace(/\"/g, ""),
+        exit_input: testResult.exit_input.replace(/\"/g, ''),
         timestamp: testResult.timestamp,
         repository: repositoryId
       }).save(function(err) {
