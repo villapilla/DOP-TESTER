@@ -9,7 +9,7 @@ angular.module('articles').controller('ArticlesController', ['$resource', '$scop
       $scope.article = ArticlesService2.query({
         param1: article._id,
       });
-    article.active = !article.active;
+      article.active = !article.active;
     };
     // Create new Article
     $scope.create = function (isValid) {

@@ -1,20 +1,13 @@
 <section ng-controller="ArticlesController" ng-init="findOne()">
   <div class="page-header testTitle col-md-11 col-xs-11 col-sm-11 col-xs-offset-1">
-    <span>Repositorio </span><span ng-bind="article.name"></span>
+    <a href='https://github.com/{{authentication.user.username}}/{{article.name}}' target="blank"><span>Repositorio </span><span ng-bind="article.name"></span></a>
   </div>
-  <!--<div class="pull-right" ng-show="authentication.user == article.user">
-  <div class="pull-right">
-    <a class="btn btn-primary" ui-sref="articles.edit({articleId: article._id})">
-      <i class="glyphicon glyphicon-edit"></i>
-    </a>
-    <a class="btn btn-primary" ng-click="remove();">
-      <i class="glyphicon glyphicon-trash"></i>
-    </a>
-  </div>-->
-  <div class="testResult col-md-11 col-xs-11 col-sm-11 col-xs-offset-1" ng-show="hasCommit(article)">
-    <h2 class="col-md-6 col-xs-12 col-sm-6">Último test</h2>
-    <h2 class="col-md-6 col-xs-12 col-sm-6" ng-bind="article.lastCommit.substring(0,6)"></h2>
-    <div class="col-xs-6 col-xs-offset-3 result">
+  <div class="testResult col-md-11 col-xs-11 col-sm-11 col-xs-offset-1" ng-show="article.test.length">
+    <div id="repostiry-data">
+      <h2 class="col-md-3 col-xs-6 col-sm-3">Último test </h2><h2 class="col-md-3 col-xs-6 col-sm-3 grey" ng-bind="article.lastCommit.substring(0,6)"></h2>
+      <h2 class="col-md-2 col-xs-5 col-sm-2 col-xs-offset-1">Realizado </h2><h2 class="col-md-3 col-xs-6 col-sm-3 grey" ng-bind="article.lastUpdate.substring(0, 10)"></h2></span>
+    </div>
+    <div class="col-xs-6 col-xs-offset-4 result">
       <div class="col-md-12 col-xs-12 col-sm-12">
         <span ng-bind="article.test[article.test.length - 1].testsPass" class="active"></span>
         <span> Test pasados</span>
@@ -25,11 +18,11 @@
       </div>
     </div>
     <div class="col-md-12 col-xs-12 col-sm-12 dropdown">
-      <button class="col-md-10 col-xs-10 col-sm-10 moreDetails" type="button" id="dropdownMenuDetails">
+      <button class="col-md-12 col-xs-12 col-sm-12 moreDetails" type="button" id="dropdownMenuDetails">
         + Detalles
       </button>
       <ul class="col-md-12 col-xs-12 col-sm-12 noDisplay" id="details">
-        <li ng-bind="article.test[article.test.length - 1].exit_input"></li>
+        <li class="col-md-12 col-xs-12 col-sm-12 pre" ng-bind="article.test[article.test.length - 1].exit_input.split('\\n').join('\n')"></li>
         <li class="noDisplay dataChart" ng-repeat="test in article.test">
           <span class="testPass" ng-bind="test.testsPass"></span>
           <span class="numberTests" ng-bind="test.numberTests - test.testsPass"></span>
@@ -49,5 +42,8 @@
         </div>
     </div>
     <div ng-include="'/modules/core/client/views/chart.client.view.html'"></div>
-    
+    </div>
+    <div ng-hide="article.test.length">
+      <h2>Actualmente no tienes test en este repositorio</h2>
+    </div>
 </section>

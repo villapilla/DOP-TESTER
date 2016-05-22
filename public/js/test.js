@@ -1,22 +1,19 @@
-<script type="text/javascript-lazy">
-    setTimeout(function() {
-       var testData = [],
+var testData = [],
       test = document.getElementsByClassName("numberTests"),
       pass = document.getElementsByClassName("testPass");
     testData.forEach.call(test, function (element, index, array) {
-      testData.push({y: (index + 1), b: element.textContent, a: pass[index].textContent});
+      testData.push({y: (array.length - index), a: element.textContent, b: pass[index].textContent});
     });
-      new Morris.Line({
-        element: 'morris-area-chart',
-        data: testData,
-        xkey: 'y',
-        ykeys: ['a', 'b'],
-        labels: ['Test Pasados', 'Test Fallados'],
-        lineColors: ["green" , "red"],
-        parseTime: false
-      });
-    }, 2000);
-   
+    alert(testData);
+    new Morris.Line({
+      element: 'morris-area-chart',
+      data: testData.reverse(),
+      xkey: 'y',
+      ykeys: ['a', 'b'],
+      labels: ['Test Pasados', 'Test Fallados'],
+      lineColors: ["green" , "red"],
+      parseTime: false
+    });
     document.getElementById("dropdownMenuDetails").addEventListener("click", function() {
       var menu = $("#details");
       if(this.text === "- Detalles") {
@@ -27,4 +24,3 @@
         menu.removeClass("noDisplay");
       }
     }, false);
-</script>

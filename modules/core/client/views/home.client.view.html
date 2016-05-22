@@ -2,7 +2,7 @@
     <div ng-hide="authentication.user">
     <div class="col-md-12 col-sm-12 col-xs-12">
       <p class="text">
-          para comenzar
+         bienvenido
       </p>
   </div>
   <div class="col-md-12 col-sm-12 col-xs-12" ng-controller="AuthenticationController">
@@ -21,5 +21,24 @@
   </div>
   </div>
 <section ng-show="authentication.user">
-<h1>Esto es la documentación</h1>
+<h1 class="title">Como comenzar</h1>
+<ul id="documentacion">
+    <li>
+        <h4>Paso 1</h4>
+        <p>Para comenzar a utilizar la aplicación es importante que tu cuenta de correo este correctamente configurada, de otro modo no podrás recibir las notificaciones de tus test.
+        Para configurar tu cuenta de correo <a href="#openModal">pincha aqui</a></p>
+    </li>
+    <li>
+        <h4>Paso 2</h4>
+        <p>Para que los test se realicen correctamente es preciso que se encuentren en la raiz de tu repositorio en una carpeta llamada test, como muestra la imagen.</p><img src="img/folder.png">
+    </li>
+    <li>
+        <h4>Paso 3</h4>
+        <p>Ahora navega hasta la ventana de tus repositorios, y activa los repositorios haciendo click sobre el botón de activar.</p><img src="img/activate.png">
+    </li>
+    <li>
+        <p>A partir de ahora tus test se ejecutaran cada vez que tu repositorio sufra algún cambio y recibiras un email con los resultados.
+        </p>
+    </li>
+</ul>
  </section>

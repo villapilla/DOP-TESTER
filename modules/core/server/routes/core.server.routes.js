@@ -13,8 +13,11 @@ module.exports = function (app) {
   //callback from webhook of github
   app.route('/push/*').get(core.updateTest);
 
+  
+  app.route('/testing/*').get(core.renderTest);
   // Define application route
   app.route('/*').get(core.renderIndex);
+  
   
   
 };

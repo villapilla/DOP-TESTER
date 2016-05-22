@@ -157,11 +157,10 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
         if (!user) {
           var possibleUsername = providerUserProfile.username || ((providerUserProfile.email) ? providerUserProfile.email.split('@')[0] : '');
           User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
+            console.log(providerUserProfile);
             user = new User({
-              /*firstName: providerUserProfile.firstName,
-              lastName: providerUserProfile.lastName,*/
-              username: providerUserProfile.displayName,
-              displayName: providerUserProfile.displayName,
+              username: providerUserProfile.username,
+              displayName: providerUserProfile.displayname,
               email: providerUserProfile.email || providerUserProfile.username + '@',
               profileImageURL: providerUserProfile.profileImageURL,
               provider: providerUserProfile.provider,
@@ -172,7 +171,7 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
             user.save(function (err) {
               return done(err, user);
             });
-            getRepositoriesData(providerUserProfile);
+            getRepositoriesData(user);
           });
         } else {
           updateRepositories(user);
@@ -209,7 +208,7 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
 
 //Actualiza el estado de los repositorios
 function updateRepositories(user) {
-  var resRepos = request('GET', "https://api.github.com/users/" + user.username +"/repos", {
+  var resRepos = request('GET', 'https://api.github.com/users/' + user.username + '/repos', {
       'headers': {
         'user-agent': 'example-user-agent'
       }
@@ -221,9 +220,9 @@ function updateRepositories(user) {
     resUpdateJson;
   //Grabamos los repositorios que no estaban en el último logIn
   Array.prototype.forEach.call(repositoriesJson, function (element, index) {
-    Repository.findOne().where("name", element.name).where("user", user).exec(function(err, repository) {
+    Repository.findOne().where('name', element.name).where('user', user).exec(function(err, repository) {
       if (err) {
-       return errorHandler(err);
+        return errorHandler(err);
       }
       if(repository === null) {
         new Repository({
@@ -231,12 +230,12 @@ function updateRepositories(user) {
           url : element.git_url,
           user: user
         }).save();
-        console.log("repositorio: " + element.name + " grabado");
+        console.log('repositorio: ' + element.name + ' grabado');
       }
     });
   });
   //Borramos los repositorios que no estan en el logIn actual
-  Repository.find().where("user", user).exec(function(err, repositories) {
+  Repository.find().where('user', user).exec(function(err, repositories) {
     if(err) {
       return errorHandler(err);
     }
@@ -248,7 +247,7 @@ function updateRepositories(user) {
         }        
       });
       if(!flag) {
-        console.log("repositorio: " + repository.name + " borrado");
+        console.log('repositorio: ' + repository.name + ' borrado');
         Repository.remove(repository).exec();
         
       }
@@ -262,12 +261,13 @@ function getRepositoriesData(providerUserProfile) {
     repositoriesJson,
     resUpdates,
     resUpdateJson,
-    resRepos = request('GET', "https://api.github.com/users/" + providerUserProfile.username +"/repos", {
+    resRepos = request('GET', 'https://api.github.com/users/' + providerUserProfile.username + '/repos', {
       'headers': {
-        'user-agent': 'example-user-agent'
+        'user-agent': 'dop-tester'
       }
     });
   repositoriesJson = JSON.parse(resRepos.getBody('utf8'));
+  //console.log(repositoriesJson);
   Array.prototype.forEach.call(repositoriesJson, function (element, index){
     /*if(element.size !== 0) {
       resUpdates = request('GET', "https://api.github.com/repos/" + providerUserProfile.username + "/" + element.name + "/commits", {
@@ -280,14 +280,21 @@ function getRepositoriesData(providerUserProfile) {
     resUpdateJson[0].sha = null;
   }
   resUpdateJson = JSON.parse(resUpdates.getBody('utf8'));*/
-    
+    console.log("a1");
+    //console.log(element);
     repo.push(new Repository({
       name : element.name,
-      url : element.git_url,
+      url : element.clone_url,
       //lastUpdate : resUpdateJson[0].commit.committer.date,
       //lastCommit : resUpdateJson[0].sha,
       user: providerUserProfile
-    }).save());
+    }).save(function(err) {
+      if(err) {
+        console.log("error saving repository " + err);
+      } else {
+        console.log("repo saved");
+      }
+    }));
   });
  // return repo;
 }

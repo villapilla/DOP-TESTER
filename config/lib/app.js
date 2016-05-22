@@ -7,7 +7,25 @@ var config = require('../config'),
   mongoose = require('./mongoose'),
   express = require('./express'),
   chalk = require('chalk'),
-  seed = require('./seed');
+  seed = require('./seed'),
+  request = require('restling'),
+  nodegit = require('nodegit'),
+  path = require('path'),
+  //Mail dependencies
+  nodeMailer = require('nodemailer'),
+  smtpTransport = require('nodemailer-smtp-transport'),
+  mailOptions = {
+    service: 'gmail',
+    auth: {
+      user: 'laravel.escaparate@gmail.com',
+      pass: 'pepe1234'
+    }
+  },
+  transporter = nodeMailer.createTransport(smtpTransport(mailOptions)),
+  //Test dependencies
+  phantomJsCloud = require('phantomjscloud'),
+  browserPhantom = new phantomJsCloud.BrowserApi(),
+  fs = require('fs');
 
 function seedDB() {
   if (config.seedDB && config.seedDB.seed) {
@@ -53,10 +71,152 @@ module.exports.start = function start(callback) {
       if (config.meanjs['meanjs-version'])
         console.log(chalk.green('MEAN.JS version:\t\t\t' + config.meanjs['meanjs-version']));
       console.log('--');
-
-      if (callback) callback(app, db, config);
+     
+      //Test service
+      /*setInterval(function () {
+        db.connections[0].model('Article').find({ 'active' : true }).exec(function (err, art) {
+          if(err) {
+            console.log('Se ha producido un error en el lanzamiento de test...');
+          }
+          console.log('Try test launch');
+          art.forEach(function (element) {
+            db.connections[0].model('User').findOne(element.user).exec(function (err, user) {
+              if(err) {
+                throw err;
+              }
+              launchTest(element, user, db);
+            });
+          });
+        });
+      },1000000);*/
+  
+      if (callback) {
+        callback(app, db, config);
+      }
     });
-
   });
-
 };
+
+function launchTest(repository, user, db) {
+  var commitUrl = 'https://api.github.com/repos/' + user.username + '/' + repository.name + '/commits',
+    testUrl = 'https://dop-tester-villapilla-1.c9users.io/testing/' + user.username + '/' + repository.name + '/test/',
+    folder = './testLaunch/repositories/' + user.username + '/' + repository.name,
+    commitSha;
+  //Obtain last commit sha key
+  request.get(commitUrl, {
+    'headers': {
+      'User-Agent': 'dop-tester'
+    }
+  }).then(function (result) {
+    commitSha = result.data[0].sha;
+    //Repository was update
+    if(commitSha !== repository.lastCommit) {
+      repository.lastCommit = commitSha;
+      repository.lastUpdate = new Date();
+      repository.save();
+      cloneRepository(repository.url, testUrl, folder, repository._id, user, db);
+      console.log('launchtest yipi kai yeahh!!!');
+    } else {
+      console.log('Repository ' + repository.name + ' has not changes');
+    }
+  }, function (err) {
+    console.log('Bad request to ' + commitUrl);
+    throw err;
+  });
+}
+
+
+function cloneRepository(url, testUrl, folder, repositoryId, user, db) {
+  nodegit.Clone(url, folder, {}).then(function (repo) {
+    console.log('Cloned ' + path.basename(url) + ' to ' + repo.workdir());
+    testEmulation(testUrl, 'plainText', folder, db, repositoryId, user);
+  }).catch(function (err) {
+    console.log(err);
+  });
+}
+
+//Function to delete not empty folders
+var deleteFolderRecursive = function(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + '/' + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+  //console.log("folder: " + path + " deleted successfully");
+};
+
+//Launch the test in a instance of phantomJsCloud
+function testEmulation(url, renderType, path, db, repositoryId, user) {
+  var testStatus,
+    Test = db.connections[0].model('Test'),
+    testResult,
+    statusCode;
+  browserPhantom.requestSingle({ url: url, renderType: renderType }, function (err, userResponse) {
+    if (err !== null) {
+      throw err;
+    }
+    testStatus = JSON.stringify(userResponse.content.data);
+    statusCode = userResponse.content.statusCode;
+    if(statusCode === 200) {
+      //Here save the result
+      testResult = extractMochaTestData(testStatus);
+      new Test({
+        numberTests: testResult.numberTest,
+        testsPass: testResult.testsPass,
+        exit_input: testResult.exit_input.replace(/\"/g, ""),
+        timestamp: testResult.timestamp,
+        repository: repositoryId
+      }).save(function(err) {
+        if (err) {
+          throw err;
+        }
+        sendEmail(testResult, user.email);
+        console.log('test save');
+      });
+    } else {
+      //Some error in the test
+      console.log('Something wrong launch test in ' + url);
+    }
+    //Delete the repository generates, low disk space :(, better way git pull
+    deleteFolderRecursive(path);
+    return userResponse;
+  });
+}
+
+
+
+function extractMochaTestData(data) {
+  var test = {},
+    testPasses = + data.substring(data.lastIndexOf('passes:') + 8, data.indexOf('failures:')),
+    testFail = + data.substring(data.indexOf('failures:') + 10, data.indexOf('duration:'));
+  test.numberTest = testPasses + testFail;
+  test.testsPass = testPasses;
+  test.exit_input = data;
+  test.timestamp = new Date();
+  
+  return test;
+}
+
+function sendEmail(data, email) {
+  mailOptions = {
+    from: 'DOP-Tester', // sender address
+    to: email, // list of receivers
+    subject: 'DOP-Tester test', // Subject line
+    html: '<a href=\"https://dop-tester-villapilla-1.c9users.io/\"><figure><img src=\"http://s32.postimg.org/e235ol769/logo_crycket_copia.png\"><figcaption>DOP-Test</figcaption></figure></a>' + 
+      '<h1>Estos son los resultados de tus test:</h1>' +
+      '<h2 style=\"color:green\">' + data.testsPass + ' test pasados</h2>' +
+      '<h2 style=\"color:red\">' + (data.numberTest - data.testsPass) + ' test fallados</h2>'
+  };
+  transporter.sendMail(mailOptions, function (err) {
+    if (err) { 
+      console.log('Sending failed: ' + err);
+      return;
+    }
+  });
+}

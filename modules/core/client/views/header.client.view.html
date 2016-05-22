@@ -10,14 +10,11 @@
   </div>
   <nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
     <ul class="nav navbar-nav" ng-if="menu.shouldRender(authentication.user);">
-      <li ng-repeat="item in menu.items | orderBy: 'position'" ng-if="item.shouldRender(authentication.user);" ng-switch="item.type" ng-class="{ active: $state.includes(item.state), dropdown: item.type === 'dropdown' }" class="{{item.class}}" dropdown="item.type === 'dropdown'">
-        <a ng-switch-when="dropdown" class="dropdown-toggle" dropdown-toggle role="button">{{::item.title}}&nbsp;<span class="caret"></span></a>
-        <ul ng-switch-when="dropdown" class="dropdown-menu">
-          <li ng-repeat="subitem in item.items | orderBy: 'position'" ng-if="subitem.shouldRender(authentication.user);" ui-sref-active="active">
-            <a ui-sref="{{subitem.state}}" ng-bind="subitem.title"></a>
-          </li>
-        </ul>
-        <a ng-switch-default ui-sref="{{item.state}}" ng-bind="item.title"></a>
+      <li ng-show="authentication.user">
+        <a ui-sref="home">Documentación</a>
+      </li>
+      <li ui-sref-active="articles" ng-show="authentication.user">
+          <a ui-sref="articles.list">Repositorios</a>
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right" ng-hide="authentication.user">
@@ -38,6 +35,9 @@
           <li ui-sref-active="articles">
             <a ui-sref="articles.list">Repositorios</a>
           </li>
+          <li>
+            <a href="#openModal">Editar email</a>
+          </li>
           <li class="divider"></li>
           <li>
             <a href="/api/auth/signout" target="_self">Cerrar Sesión</a>
@@ -46,4 +46,29 @@
       </li>
     </ul>
   </nav>
+</div>
+<div id="openModal" class="modalDialog">
+	<div ng-controller="EditProfileController">
+	  <form name="userForm" ng-submit="updateUserProfile(userForm.$valid)" novalidate autocomplete="off">
+  		<a href="#close" title="Cerrar" class="close">X</a>
+  		<h2>Actualiza tu email</h2>
+  		<div class="form-group" show-errors>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-control" ng-model="user.email" placeholder="Email" lowercase required>
+          <div ng-messages="userForm.email.$error" role="alert">
+            <p class="help-block error-text" ng-message="required">La dirección de email es obligatoria</p>
+            <p class="help-block error-text" ng-message="email">Dirección de email no valida.</p>
+          </div>
+        </div>
+  		<div class="text-center form-group">
+          <button type="submit" class="btn btn-primary">Guardar email</button>
+          <a href="#close" title="Cerrar" class="btn btn-danger">Cerrar</a>
+        </div>
+        <div ng-show="success" class="text-center text-success">
+          <strong>El email ha sido actualizado</strong>
+        </div>
+        <div ng-show="error" class="text-center text-danger">
+          <strong ng-bind="error"></strong>
+        </div>
+	</div>
 </div>

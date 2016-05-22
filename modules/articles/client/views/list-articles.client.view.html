@@ -1,34 +1,13 @@
-<!--<section ng-controller="ArticlesController" ng-init="find()">
-  <div class="page-header">
-    <h1>Articles</h1>
-  </div>
-  <div class="list-group">
-    <a ng-repeat="article in articles" ui-sref="articles.view({articleId: article._id})" class="list-group-item">
-      <small class="list-group-item-text">
-        Posted on
-        <span ng-bind="article.created | date:'mediumDate'"></span>
-        by
-        <span ng-bind="article.user.displayName"></span>
-      </small>
-      <h4 class="list-group-item-heading" ng-bind="article.title"></h4>
-      <p class="list-group-item-text" ng-bind="article.content"></p>
-    </a>
-  </div>
-  <div class="alert alert-warning text-center" ng-if="articles.$resolved && !articles.length">
-    No articles yet, why don't you <a ui-sref="articles.create">create one</a>?
-  </div>
-</section>-->
-
 <section  ng-controller="ArticlesController" ng-init="find(user)">
     <div class="col-md-12 col-sm-12 col-xs-12 home">
             <ul class="col-md-4 col-sm-4 col-xs-0 menu-lateral">
                 <li>
                     <h2>
-                        <a href="/home">Repositorios</a>
+                        <span>Repositorios</span>
                     </h2>
                 </li>
                 <li>
-                    <span class="divider"></span>
+                    <span class="divider2"></span>
                 </li>
                  <a ng-repeat="article in articles" ui-sref="articles.read({articleId: article._id})" class="list-group-item">
                    <span class="inactive"  ng-bind="article.name"  ng-class="{active: repo.active}"></span>
