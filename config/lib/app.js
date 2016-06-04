@@ -26,7 +26,9 @@ var config = require('../config'),
   //Test dependencies
   phantomJsCloud = require('phantomjscloud'),
   browserPhantom = new phantomJsCloud.BrowserApi(),
-  fs = require('fs');
+  fs = require('fs'),
+  appUrl = 'https://dop-tester-villapilla-1.c9users.io',
+  timeToCheckLaunchTest = 3000000; // 5 minutos
 
 function seedDB() {
   if (config.seedDB && config.seedDB.seed) {
@@ -89,7 +91,7 @@ module.exports.start = function start(callback) {
             });
           });
         });
-      },2000000);
+      },timeToCheckLaunchTest);
   
       if (callback) {
         callback(app, db, config);
@@ -105,7 +107,7 @@ function generateIndex(js, renderType, folder, db, repository, user) {
     searchInit = '<h1>DOP-Tester</h1>',
     searchEnd = '<h1>end of test</h1>',
     file = './testLaunch/repositories/layout_html_no_test/index.html',
-    dirPath = 'https://dop-tester-villapilla-1.c9users.io/testing/layout_html_no_test/';
+    dirPath = appUrl + '/testing/layout_html_no_test/';
   fs.readFile(file, function(err, index) {
     if(err) {
       console.log('Error in read ' + file);
@@ -129,7 +131,7 @@ function generateIndex(js, renderType, folder, db, repository, user) {
 
 function launchTest(repository, user, db) {
   var commitUrl = 'https://api.github.com/repos/' + user.username + '/' + repository.name + '/commits',
-    testUrl = 'https://dop-tester-villapilla-1.c9users.io/testing/' + user.username + '/' + repository.name + '/test/',
+    testUrl = appUrl + '/testing/' + user.username + '/' + repository.name + '/test/',
     folder = './testLaunch/repositories/' + user.username + '/' + repository.name,
     commitSha;
   //Obtain last commit sha key
@@ -260,7 +262,7 @@ function sendEmail(data, email) {
     from: 'DOP-Tester', // sender address
     to: email, // list of receivers
     subject: 'DOP-Tester test', // Subject line
-    html: '<a href=\"https://dop-tester-villapilla-1.c9users.io/\"><figure><img src=\"http://s32.postimg.org/e235ol769/logo_crycket_copia.png\"><figcaption>DOP-Test</figcaption></figure></a>' + 
+    html: '<a href=\"' + appUrl + '/\"><figure><img src=\"http://s32.postimg.org/e235ol769/logo_crycket_copia.png\"><figcaption>DOP-Test</figcaption></figure></a>' + 
       '<h1>Estos son los resultados de tus test:</h1>' +
       '<h2 style=\"color:green\">' + data.testsPass + ' test pasados</h2>' +
       '<h2 style=\"color:red\">' + (data.numberTest - data.testsPass) + ' test fallados</h2>'

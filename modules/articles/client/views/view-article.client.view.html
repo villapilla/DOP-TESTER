@@ -23,7 +23,7 @@
       </button>
       <ul class="col-md-12 col-xs-12 col-sm-12 noDisplay" id="details">
         <li class="col-md-12 col-xs-12 col-sm-12 pre" ng-bind="article.test[article.test.length - 1].exit_input.split('\\n').join('\n')"></li>
-        <li class="noDisplay dataChart" ng-repeat="test in article.test">
+        <li class="noDisplay dataChart" ng-repeat="test in article.test | orderBy : 'timestamp' : reverse">
           <span class="testPass" ng-bind="test.testsPass"></span>
           <span class="numberTests" ng-bind="test.numberTests - test.testsPass"></span>
         </li>
