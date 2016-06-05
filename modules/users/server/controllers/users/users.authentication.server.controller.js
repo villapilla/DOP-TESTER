@@ -280,7 +280,6 @@ function getRepositoriesData(providerUserProfile) {
     resUpdateJson[0].sha = null;
   }
   resUpdateJson = JSON.parse(resUpdates.getBody('utf8'));*/
-    console.log("a1");
     //console.log(element);
     repo.push(new Repository({
       name : element.name,
@@ -290,9 +289,9 @@ function getRepositoriesData(providerUserProfile) {
       user: providerUserProfile
     }).save(function(err) {
       if(err) {
-        console.log("error saving repository " + err);
+        console.log('error saving repository ' + err);
       } else {
-        console.log("repo saved");
+        console.log('repo saved');
       }
     }));
   });
