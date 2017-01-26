@@ -27,8 +27,8 @@ var config = require('../config'),
   phantomJsCloud = require('phantomjscloud'),
   browserPhantom = new phantomJsCloud.BrowserApi(),
   fs = require('fs'),
-  appUrl = 'https://dop-tester-villapilla-1.c9users.io',
-  timeToCheckLaunchTest = 3000000; // 5 minutos
+  appUrl = 'localhost:3000',
+  timeToCheckLaunchTest = 1000000; // 5 minutos
 
 function seedDB() {
   if (config.seedDB && config.seedDB.seed) {
